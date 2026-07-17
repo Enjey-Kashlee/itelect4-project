@@ -1,60 +1,75 @@
-# itelect4-project — Campus Lost & Found Tracker
+# React + TypeScript + Vite
 
-A TypeScript project for a **Campus Lost & Found Tracker**. Students and security admins report items that have been lost or found around campus; when a user recognizes an item as theirs, they file a claim on it, and a security admin verifies the claim before the item is handed over. This repo models that domain with TypeScript interfaces, type aliases, unions, generics, utility types, and enums.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Interfaces / Types defined so far
+Currently, two official plugins are available:
 
-### Core interfaces
-- **`User`** — a person on the platform (`role: "student" | "security_admin"`).
-- **`Item`** — a lost/found post (`status: "lost" | "found"`, plus `location` and who reported it).
-- **`Claim`** — filed when a user claims an item; a security admin verifies it (`verified?`).
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-### Type aliases & unions
-- **`ID`** — `number | string`.
-- **`Coordinate`** — an `{ x, y }` object shape (e.g. a pin on the campus map).
-- **`Formatter`** — a function signature `(value: number) => string`.
-- **`StringOrNumber`** — union of `string | number`.
-- **`Status`** — literal union `"pending" | "active" | "inactive"`.
+## React Compiler
 
-### Intersection type
-- **`UserWithItem`** — `User` combined with a `reportedItem` and a `reportCount`.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-### Generic interface
-- **`ApiResponse<T>`** — a reusable API envelope (`success`, `data: T`, optional `message`).
+## Expanding the ESLint configuration
 
-### Utility types (derived from `User`)
-- **`UserUpdate`** — `Partial<User>` (all fields optional, for update payloads).
-- **`UserPreview`** — `Pick<User, "id" | "name" | "role">`.
-- **`PublicUser`** — `Omit<User, "email" | "isActive">` (safe to expose publicly).
-- **`RoleCount`** — `Record<"student" | "security_admin", number>` (dashboard counts).
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-### Enums
-- **`ClaimStatus`** — `Pending | Approved | Rejected` (claim verification lifecycle).
-- **`Role`** — const enum: `Student = "student"`, `SecurityAdmin = "security_admin"`.
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-## Install & run
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Run the entry point
-npx ts-node src/index.ts
-```
-
-To type-check without running:
-
-```bash
-npx tsc --noEmit
-```
-
-## Project structure
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 
 ```
-src/
-  index.ts        # Entry point — demonstrates every type in use
-  sample.ts       # GT1 Part 1 exercise (JS -> TS conversion)
-  types/
-    index.ts      # All interfaces, aliases, unions, generics, utility types, enums
-tsconfig.json     # Compiler options (strict mode enabled)
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+
 ```
