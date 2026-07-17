@@ -1,4 +1,4 @@
-import type { User, Course, Submission } from "./types/index";
+import type { User, Course, Submission, ApiResponse } from "./types/index";
 
 // ===== PRIMITIVE TYPE ANNOTATIONS =====
 // Variables with explicit types
@@ -74,3 +74,32 @@ function formatDate(value: string | Date): string {
 console.log(processInput("hello")); // HELLO
 console.log(processInput(3.14159)); // 3.14
 console.log(formatDate(new Date())); // e.g. 7/4/2026
+
+// ===== GENERIC FUNCTIONS =====
+// T is inferred automatically from whatever array you pass in
+function getFirst<T>(items: T[]): T | undefined {
+    return items[0];
+}
+// Constrained generic -- T must have an "id: number" field
+function getById<T extends { id: number }>(
+    items: T[],
+    id: number
+): T | undefined {
+    return items.find((item) => item.id === id);
+}
+// [student] is an array containing one element
+const firstUser = getFirst<User>([student]);
+const foundUser = getById<User>([student], 1);
+// Each ?. checks whether the object on its left exists before trying to access the next property, preventing errors if any part of the chain is null or undefined.
+    console.log(firstUser?.name); // Juan dela Cruz
+console.log(foundUser?.email); // juan@example.com
+
+const userResponse: ApiResponse<User> = {
+    success: true,
+    data: student,
+};
+const courseResponse: ApiResponse<Course[]> = {
+    success: true,
+    data: [course],
+};
+console.log(userResponse.data.name); // Juan dela Cruz

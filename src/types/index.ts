@@ -65,8 +65,16 @@ const topStudent: StudentWithCourse = {
     enrolledCourse: {
         code: "ITELECT4",
         title: "IT Elective 4",
-        units: 3, 
+        units: 3,
         semester: "1st"
     },
     gpa: 1.25,
 };
+
+// ===== GENERIC INTERFACE =====
+// ApiResponse<T> can wrap ANY data type -- every future GT reuses this
+export interface ApiResponse<T> {
+    success: boolean;
+    data: T;
+    message?: string;
+}
