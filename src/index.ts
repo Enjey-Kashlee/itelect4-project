@@ -1,4 +1,4 @@
-import type { User, Course, Submission } from "./types/index";
+import type { User, Item, Claim } from "./types/index";
 
 // ===== PRIMITIVE TYPE ANNOTATIONS =====
 // Variables with explicit types
@@ -43,14 +43,16 @@ const student: User = {
     role: "student",
     isActive: true,
 };
-const course: Course = {
-    code: "ITELECT4",
-    title: "IT Elective 4",
-    units: 3,
-    semester: "1st Semester 2026-2027",
+const item: Item = {
+    id: 101,
+    title: "Blue Water Bottle",
+    description: "Hydro Flask with a DLSL sticker",
+    status: "lost",
+    location: "Library, 2nd floor",
+    reportedById: 1,
 };
 console.log(student);
-console.log(course);
+console.log(item);
 
 // ===== TYPE NARROWING =====
 import type { StringOrNumber } from "./types/index";
@@ -100,9 +102,9 @@ const userResponse: ApiResponse<User> = {
     success: true,
     data: student,
 };
-const courseResponse: ApiResponse<Course[]> = {
+const itemResponse: ApiResponse<Item[]> = {
     success: true,
-    data: [course],
+    data: [item],
 };
 
 console.log(userResponse.data.name); // Juan dela Cruz
@@ -120,25 +122,25 @@ const preview: UserPreview = { id: 1, name: "Juan dela Cruz", role: "student" };
 const publicProfile: PublicUser = { id: 1, name: "Juan dela Cruz", role: "student" };
 
 // Record<K,T> -- dashboard-style counts
-const roleCount: RoleCount = { student: 45, admin: 2, instructor: 3 };
+const roleCount: RoleCount = { student: 45, security_admin: 2 };
 
 // ===== ReturnType<T> =====
-function makeSubmission(courseCode: string) {
-    return { id: 1, studentId: 1, courseCode, submittedAt: new Date() };
+function makeClaim(itemId: number) {
+    return { id: 1, claimantId: 1, itemId, claimedAt: new Date() };
 }
 
 // Infer the shape directly from the function -- no need to redeclare it
-type NewSubmission = ReturnType<typeof makeSubmission>;
-const gt1Submission: NewSubmission = makeSubmission("ITELECT4");
+type NewClaim = ReturnType<typeof makeClaim>;
+const gt1Claim: NewClaim = makeClaim(101);
 
 // ===== USING ENUMS =====
-import { SubmissionStatus, Role } from "./types/index";
+import { ClaimStatus, Role } from "./types/index";
 
-let status: SubmissionStatus = SubmissionStatus.Pending;
-console.log(SubmissionStatus[status]); // "Pending" -- reverse mapping
+let status: ClaimStatus = ClaimStatus.Pending;
+console.log(ClaimStatus[status]); // "Pending" -- reverse mapping
 
-status = SubmissionStatus.Graded;
-console.log(status === SubmissionStatus.Graded); // true
+status = ClaimStatus.Approved;
+console.log(status === ClaimStatus.Approved); // true
 
 const currentRole: Role = Role.Student;
 console.log(currentRole); // "student"

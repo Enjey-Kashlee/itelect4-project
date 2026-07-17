@@ -10,7 +10,6 @@ function getUser(id: StringOrNumber): User {
         email: "juan@example.com",
         role: "student",
         isActive: true,
-        score: 95.5,
     };
 }
 function calculateGrade(score: number, maxScore: number): string {

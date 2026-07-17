@@ -4,30 +4,32 @@ export interface User {
     id: number | string;
     name: string;
     email: string;
-    role: "student" | "admin" | "instructor"; // only these values
+    role: "student" | "security_admin"; // only these values
     isActive: boolean;
-    score?: number;
 }
-export interface Course {
-    code: string;
-    title: string;
-    units: number;
-    semester: string;
-}
-export interface Submission {
+// An Item is a lost/found post reported by a user.
+export interface Item {
     id: number;
-    studentId: number;
-    courseCode: string;
-    repoUrl: string;
-    submittedAt: Date;
-    score?: number; // ? means this field is optional
+    title: string;
+    description: string;
+    status: "lost" | "found";
+    location: string;
+    reportedById: number | string;
+}
+// A Claim is filed when a user claims an item; a security admin verifies it.
+export interface Claim {
+    id: number;
+    itemId: number;
+    claimantId: number | string;
+    claimedAt: Date;
+    verified?: boolean; // ? means this field is optional -- set once an admin verifies
 }
 
 // ===== TYPE ALIASES =====
 // A type alias gives a name to any type -- primitives, unions, functions, objects
 // Alias for a union type (string OR number)
 export type ID = number | string;
-// Alias for an object shape
+// Alias for an object shape -- e.g. a pin on the campus map where an item was found
 export type Coordinate = {
     x: number;
     y: number;
@@ -52,23 +54,25 @@ printId(101);
 printId("S2026-001");
 
 // ===== INTERSECTION TYPES -- combines ALL properties =====
-// StudentWithCourse must have all User fields AND enrolledCourse AND gpa
-export type StudentWithCourse = User & {
-    enrolledCourse: Course;
-    gpa: number;
+// UserWithItem must have all User fields AND reportedItem AND reportCount
+export type UserWithItem = User & {
+    reportedItem: Item;
+    reportCount: number;
 };
-const topStudent: StudentWithCourse = {
+const topReporter: UserWithItem = {
     id: 1, name: "Maria Santos",
     email: "m@example.com",
     role: "student",
     isActive: true,
-    enrolledCourse: {
-        code: "ITELECT4",
-        title: "IT Elective 4",
-        units: 3,
-        semester: "1st"
+    reportedItem: {
+        id: 101,
+        title: "Blue Water Bottle",
+        description: "Hydro Flask with a DLSL sticker",
+        status: "lost",
+        location: "Library, 2nd floor",
+        reportedById: 1,
     },
-    gpa: 1.25,
+    reportCount: 5,
 };
 
 // ===== GENERIC INTERFACE =====
@@ -87,21 +91,17 @@ export type UserPreview = Pick<User, "id" | "name" | "role">;
 // Omit<T, K> -- keep every field EXCEPT the listed ones
 export type PublicUser = Omit<User, "email" | "isActive">;
 // Record<K, T> -- a fixed set of keys, each mapped to the same value type
-export type RoleCount = Record<
-    "student" | "admin" | "instructor",
-    number
->;
+export type RoleCount = Record<"student" | "security_admin", number>;
 
 // ===== ENUMS =====
 // Regular enum -- exists at runtime; can be looped over or reverse-mapped
-export enum SubmissionStatus {
+export enum ClaimStatus {
     Pending,
-    Graded,
-    Late,
+    Approved,
+    Rejected,
 }
 // const enum -- inlined at compile time, zero runtime overhead
 export const enum Role {
     Student = "student",
-    Admin = "admin",
-    Instructor = "instructor",
+    SecurityAdmin = "security_admin",
 }
