@@ -1,73 +1,62 @@
-# React + TypeScript + Vite
+# itelect4-project — Campus Lost & Found
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A small React + TypeScript app for reporting and claiming lost/found items on campus. Built as a GT1 exercise in TypeScript fundamentals: interfaces, type aliases, unions, intersections, generics, utility types, and enums, applied to a real UI.
 
-Currently, two official plugins are available:
+## Tech stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vite.dev/) for dev server and bundling
+- [ESLint](https://eslint.org/) with `typescript-eslint`
 
-## React Compiler
+## Getting started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The app runs at `http://localhost:5173` by default.
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+## Scripts
 
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+| Command           | Description                                     |
+| ------------------ | ------------------------------------------------ |
+| `npm run dev`      | Start the Vite dev server with HMR               |
+| `npm run build`    | Type-check (`tsc -b`) and build for production   |
+| `npm run lint`     | Run ESLint over the project                      |
+| `npm run preview`  | Preview the production build locally             |
+
+## Project structure
+
+```
+src/
+├── App.tsx                # Renders sample User/Item/Claim data through the cards below
+├── components/
+│   ├── UserCard.tsx        # Displays a User; typed onClick + onChange handlers
+│   ├── ItemCard.tsx        # Displays a lost/found Item
+│   └── ClaimBadge.tsx      # Displays a Claim and its verification status
+├── types/
+│   └── index.ts             # Domain types: interfaces, aliases, unions, generics, enums
+└── main.tsx                # App entry point
+```
+
+## Domain model
+
+Defined in [`src/types/index.ts`](src/types/index.ts):
+
+- **`User`** — a student or security admin account.
+- **`Item`** — a lost or found item report (`status: "lost" | "found"`).
+- **`Claim`** — a claim filed against an item, pending admin verification.
+- **`ApiResponse<T>`** — generic wrapper for API responses, reusable across any data type.
+- Utility types (`UserUpdate`, `UserPreview`, `PublicUser`, `RoleCount`) derived from `User` via `Partial`, `Pick`, `Omit`, and `Record`.
+- **`ClaimStatus`** / **`Role`** — a regular enum and a `const enum` for claim state and account role.
+
+Each component in `src/components/` declares its own `Props` interface and consumes one of these domain types directly, so the UI stays in sync with the type definitions.
+
+## Type-checking
+
+The project must build with zero TypeScript errors:
+
+```bash
+npx tsc --noEmit
 ```
