@@ -1,14 +1,14 @@
-import type { Course } from "../types/index";
-interface CourseCardProps {
-    course: Course;
+import type { Item } from "../types/index";
+interface ItemCardProps {
+    item: Item;
 }
-function CourseCard({ course }: CourseCardProps) {
+function ItemCard({ item }: ItemCardProps) {
     return (
-        <div className="course-card">
-            <h3>{course.code}</h3>
-            <p>{course.title}</p>
-            <p>{course.units} units -- {course.semester} </p>
+        <div className="item-card">
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <p>Status: {item.status} -- Location: {item.location}</p>
         </div>
     );
 }
-export default CourseCard;
+export default ItemCard;
