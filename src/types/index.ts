@@ -9,7 +9,7 @@ export interface User {
 }
 // An Item is a lost/found post reported by a user.
 export interface Item {
-  id: number;
+  id: ID; // number for lost/found reports, string for reused codes (e.g. a course code standing in as an item id)
   title: string;
   description: string;
   status: "lost" | "found";
