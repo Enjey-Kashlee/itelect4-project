@@ -41,6 +41,7 @@ const studentId: ID = "S2026-001";
 const position: Coordinate = { x: 10, y: 20 };
 const formatScore: Formatter = (value) => `${value}%`;
 console.log(studentId); // S2026-001
+console.log(position); // { x: 10, y: 20 }
 console.log(formatScore(95.5)); // 95.5%
 
 // ===== UNION TYPES -- One OR the other =====
@@ -75,6 +76,7 @@ const topReporter: UserWithItem = {
   },
   reportCount: 5,
 };
+console.log(topReporter.name, "reported", topReporter.reportCount, "items");
 
 // ===== GENERIC INTERFACE =====
 // ApiResponse<T> can wrap ANY data type -- every future GT reuses this
