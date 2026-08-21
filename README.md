@@ -6,6 +6,9 @@ A small React + TypeScript app for reporting and claiming lost/found items on ca
 
 - [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
 - [Vite](https://vite.dev/) for dev server and bundling
+- [React Router](https://reactrouter.com/) for client-side routes and URL parameters
+- [Zustand](https://zustand.docs.pmnd.rs/) for typed shared authentication state
+- [Tailwind CSS](https://tailwindcss.com/) for utility-first styling and dark mode
 - [ESLint](https://eslint.org/) with `typescript-eslint`
 
 ## Getting started
@@ -30,15 +33,38 @@ The app runs at `http://localhost:5173` by default.
 
 ```
 src/
-├── App.tsx                # Renders sample User/Item/Claim data through the cards below
+├── App.tsx                # Declares the nested application routes
 ├── components/
+│   ├── Layout.tsx         # Shared navigation, auth controls, theme toggle, and Outlet
 │   ├── UserCard.tsx        # Displays a User; typed onClick + onChange handlers
 │   ├── ItemCard.tsx        # Displays a lost/found Item
 │   └── ClaimBadge.tsx      # Displays a Claim and its verification status
+├── data/
+│   ├── itemLookup.ts       # Finds an Item from a string URL ID
+│   └── mockData.ts         # Sample users, items, and claims
+├── hooks/
+│   ├── usePrevious.ts      # Remembers the previous value of a state variable
+│   └── useToggle.ts        # Reusable boolean state helper
+├── pages/
+│   ├── DashboardPage.tsx   # Dashboard user and claim content
+│   ├── ItemsPage.tsx       # Searchable item list with detail links
+│   ├── ItemDetailPage.tsx  # Detail view for /items/:id
+│   └── NotFoundPage.tsx    # Catch-all 404 screen
+├── store/
+│   └── authStore.ts        # Typed Zustand auth state and actions
 ├── types/
 │   └── index.ts             # Domain types: interfaces, aliases, unions, generics, enums
 └── main.tsx                # App entry point
 ```
+
+## Routes
+
+- `/` — dashboard content inside the shared layout.
+- `/items` — searchable and filterable lost/found item list.
+- `/items/:id` — detail page that reads the item ID from the URL.
+- `*` — not-found page with a link back to the dashboard.
+
+Item cards use `Link` for client-side navigation. The detail page uses typed `useParams` to read the URL ID and `useNavigate` for its Back button. The shared `Layout` remains mounted around all child routes.
 
 ## Domain model
 

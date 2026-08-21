@@ -4,11 +4,24 @@
 
 Campus Lost & Found is a small React + TypeScript app built with Vite and Tailwind CSS.
 
-- `src/main.tsx` mounts the app; `src/App.tsx` owns demo state, effects, filtering, and integration.
-- `src/components/` contains presentational `UserCard`, `ItemCard`, and `ClaimBadge` components. Keep each component’s `*Props` interface co-located.
+- `src/main.tsx` is the entry point. It mounts the app inside `StrictMode` and `BrowserRouter`.
+- `src/App.tsx` contains the route table only. The current routes are `/` for the dashboard, `/items` for the item list, `/items/:id` for item details, and `*` for the not-found page.
+- `src/pages/` contains screen-level components. `DashboardPage.tsx` owns dashboard user/claim state; `ItemsPage.tsx` owns item loading, search, filtering, and links; `ItemDetailPage.tsx` reads an item ID from the URL; `NotFoundPage.tsx` handles unknown URLs.
+- `src/data/mockData.ts` is the shared source for the sample student, lost/found items, and claims used by pages. `itemLookup.ts` contains the typed URL-ID lookup helper.
+- `src/components/` contains the shared `Layout` plus presentational `UserCard`, `ItemCard`, and `ClaimBadge` components. Keep each component’s `*Props` interface co-located.
 - `src/hooks/` contains one default-exported custom hook per file.
+- `src/store/authStore.ts` contains the typed Zustand auth store used by the shared layout.
 - `src/types/index.ts` is the source of truth for `User`, `Item`, `Claim`, and shared TypeScript types.
 - `src/assets/` and `public/` hold bundled and static assets.
+
+## Routing Conventions
+
+- This project uses the `react-router` package. Import `BrowserRouter`, `Routes`, `Route`, and `Link` from `react-router`; do not add `react-router-dom` for browser routing.
+- Keep the single `BrowserRouter` wrapper in `src/main.tsx` and keep route declarations in `src/App.tsx`.
+- Put screen UI in `src/pages/` and use `Link` for internal navigation instead of plain anchors that reload the app. Use `useNavigate` for navigation triggered by event handlers such as Back buttons.
+- Use typed `useParams<{ id: string }>()` for item detail URLs and compare the string parameter with `String(item.id)`.
+- Keep child routes nested under `Layout` so the navigation bar, theme toggle, and `<Outlet />` wrap every page.
+- Preserve the `*` catch-all route so unknown URLs render `NotFoundPage` with a way back to `/`.
 
 ## Build, Test, and Development Commands
 
@@ -20,11 +33,13 @@ Use two-space indentation, semicolons, double quotes, and trailing commas, match
 
 ## Testing Guidelines
 
-No test runner or test files are configured, so there is no coverage threshold. For every change, run `npm run lint`, `npm run build`, and `npx tsc --noEmit`; manually smoke-test `npm run dev` for UI changes. If adding tests, document the chosen framework and script in the same change.
+No test runner or test files are configured, so there is no coverage threshold. For every change, run `npm run lint`, `npm run build`, and `npx tsc --noEmit`; manually smoke-test `npm run dev` for UI changes. For routing changes, verify that `/` renders the dashboard, `/items` renders the searchable item list, `/items/101` renders an item detail page, `/items/999` shows the invalid-ID message, and an unknown path such as `/does-not-exist` renders the 404 page and its link back to the dashboard. If adding tests, document the chosen framework and script in the same change.
+
+At present, `npm run lint` may report the existing React hooks `refs` violation at `src/hooks/usePrevious.ts:12` (`return ref.current`). Treat that as a baseline issue while working on routing, verify that new changes do not add lint errors, and fix the hook separately when requested.
 
 ## Domain Notes
 
-Translate course exercise terms into this project’s domain: `Course` becomes `Item`, `Submission` becomes `Claim`, and `CourseCard` becomes `ItemCard`. Preserve Campus Lost & Found sample content and extend the existing model instead of creating parallel types.
+Translate course exercise terms into this project’s domain: `Course` becomes `Item`, `Submission` becomes `Claim`, and `CourseCard` becomes `ItemCard`. Preserve Campus Lost & Found sample content and extend the existing model instead of creating parallel types. Treat the current repository structure and domain names as authoritative when adapting coursework instructions.
 
 ## Commit & Pull Request Guidelines
 
