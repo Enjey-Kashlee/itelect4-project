@@ -28,6 +28,7 @@ The app runs at `http://localhost:5173` by default.
 | `npm run build`    | Type-check (`tsc -b`) and build for production   |
 | `npm run lint`     | Run ESLint over the project                      |
 | `npm run preview`  | Preview the production build locally             |
+| `npm test`         | Run the protected-route decision tests           |
 
 ## Project structure
 
@@ -62,6 +63,8 @@ src/
 - `/` — dashboard content inside the shared layout.
 - `/items` — searchable and filterable lost/found item list.
 - `/items/:id` — detail page that reads the item ID from the URL.
+- `/login` — name-based demo login page.
+- `/claims` — authenticated claims page protected by the auth store.
 - `*` — not-found page with a link back to the dashboard.
 
 Item cards use `Link` for client-side navigation. The detail page uses typed `useParams` to read the URL ID and `useNavigate` for its Back button. The shared `Layout` remains mounted around all child routes.
