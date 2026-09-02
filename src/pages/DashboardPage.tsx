@@ -1,9 +1,8 @@
 import { useState } from "react";
 import type { User } from "../types/index";
 import UserCard from "../components/UserCard";
-import ClaimBadge from "../components/ClaimBadge";
 import useToggle from "../hooks/useToggle";
-import { mockClaims, student } from "../data/mockData";
+import { student } from "../data/mockData";
 
 function DashboardPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -26,9 +25,6 @@ function DashboardPage() {
         >
           {showDetails ? "Hide" : "Show"} Details
         </button>
-        {mockClaims.map((claim) => (
-          <ClaimBadge key={claim.id} claim={claim} />
-        ))}
       </div>
     </>
   );

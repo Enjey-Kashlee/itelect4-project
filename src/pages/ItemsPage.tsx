@@ -81,7 +81,7 @@ function ItemsPage() {
             to={`/items/${item.id}`}
             className="block transition hover:-translate-y-0.5"
           >
-            <ItemCard item={item} />
+            <ItemCard item={item}/>
           </Link>
         ))}
       </div>
