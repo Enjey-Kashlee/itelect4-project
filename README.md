@@ -37,6 +37,8 @@ src/
 ├── App.tsx                # Declares the nested application routes
 ├── components/
 │   ├── Layout.tsx         # Shared navigation, auth controls, theme toggle, and Outlet
+│   ├── ProtectedRoute.tsx  # Redirects unauthenticated users from protected routes
+│   ├── protectedRouteDecision.ts # Pure protected-route redirect decision
 │   ├── UserCard.tsx        # Displays a User; typed onClick + onChange handlers
 │   ├── ItemCard.tsx        # Displays a lost/found Item
 │   └── ClaimBadge.tsx      # Displays a Claim and its verification status
@@ -50,12 +52,17 @@ src/
 │   ├── DashboardPage.tsx   # Dashboard user and claim content
 │   ├── ItemsPage.tsx       # Searchable item list with detail links
 │   ├── ItemDetailPage.tsx  # Detail view for /items/:id
+│   ├── LoginPage.tsx       # Name-based demo login form
+│   ├── ClaimsPage.tsx      # Authenticated claims list
 │   └── NotFoundPage.tsx    # Catch-all 404 screen
 ├── store/
 │   └── authStore.ts        # Typed Zustand auth state and actions
 ├── types/
 │   └── index.ts             # Domain types: interfaces, aliases, unions, generics, enums
 └── main.tsx                # App entry point
+
+tests/
+└── protectedRouteDecision.test.ts # Protected-route decision tests
 ```
 
 ## Routes
@@ -68,6 +75,12 @@ src/
 - `*` — not-found page with a link back to the dashboard.
 
 Item cards use `Link` for client-side navigation. The detail page uses typed `useParams` to read the URL ID and `useNavigate` for its Back button. The shared `Layout` remains mounted around all child routes.
+
+## Demo authentication
+
+Authentication is intentionally local and in-memory for this exercise. The login page accepts a non-empty name, stores a demo token and user name in the typed Zustand auth store, and navigates to `/claims`. `ProtectedRoute` reads the token and redirects unauthenticated users to `/login`; authenticated users render the nested claims route through `Outlet`. The shared layout exposes Login and Logout controls, and logging out clears the store.
+
+This is demo authentication only: it does not call a backend, persist a session, or provide real account security.
 
 ## Domain model
 
