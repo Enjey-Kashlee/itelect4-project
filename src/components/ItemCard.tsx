@@ -19,6 +19,9 @@ function ItemCard({ item, variant = "default" }: ItemCardProps) {
       >
         {item.title}
       </h3>
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        Item ID: {item.id}
+      </p>
       {!isCompact && (
         <p className="text-gray-600 dark:text-gray-300">{item.description}</p>
       )}

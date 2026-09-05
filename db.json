@@ -1,0 +1,159 @@
+{
+  "items": [
+    {
+      "id": "101",
+      "title": "Blue Water Bottle",
+      "description": "Hydro Flask with a DLSL sticker",
+      "status": "lost",
+      "location": "Library, 2nd floor",
+      "reportedById": 1
+    },
+    {
+      "id": "102",
+      "title": "Black Umbrella",
+      "description": "Folding umbrella, slightly bent handle",
+      "status": "found",
+      "location": "Cafeteria",
+      "reportedById": 1
+    },
+    {
+      "id": "103",
+      "title": "Student ID Card",
+      "description": "DLSL ID, name partly worn off",
+      "status": "lost",
+      "location": "Gymnasium entrance",
+      "reportedById": 1
+    },
+    {
+      "id": "104",
+      "title": "Grey Backpack",
+      "description": "Jansport backpack with a laptop inside",
+      "status": "found",
+      "location": "Parking Lot B",
+      "reportedById": 1
+    },
+    {
+      "id": "105",
+      "title": "Wired Earphones",
+      "description": "White earphones, tangled in a small pouch",
+      "status": "lost",
+      "location": "Room CB204",
+      "reportedById": 1
+    }
+  ],
+  "claims": [
+    {
+      "id": "1",
+      "itemId": 101,
+      "claimantId": 1,
+      "claimedAt": "2026-08-05T10:15:00",
+      "verified": false
+    },
+    {
+      "id": "2",
+      "itemId": 103,
+      "claimantId": 1,
+      "claimedAt": "2026-08-06T14:30:00",
+      "verified": true
+    },
+    {
+      "id": "3",
+      "itemId": 105,
+      "claimantId": 1,
+      "claimedAt": "2026-08-07T09:00:00",
+      "verified": false
+    },
+    {
+      "itemId": 101,
+      "claimantId": 1,
+      "claimedAt": "2026-09-04T10:58:36.296Z",
+      "verified": false,
+      "id": "gHsNU-mpwSw"
+    },
+    {
+      "itemId": 101,
+      "claimantId": 1,
+      "claimedAt": "2026-09-04T12:54:16.900Z",
+      "verified": false,
+      "id": "zUjgmh7Ni-I"
+    },
+    {
+      "itemId": 101,
+      "claimantId": 1,
+      "claimedAt": "2026-09-04T12:54:21.324Z",
+      "verified": false,
+      "id": "5dYnG8DqX3w"
+    },
+    {
+      "itemId": 101,
+      "claimantId": 1,
+      "claimedAt": "2026-09-05T01:25:23.700Z",
+      "verified": false,
+      "id": "BmFhF9fxTvA"
+    },
+    {
+      "itemId": 101,
+      "claimantId": 1,
+      "claimedAt": "2026-09-05T01:38:03.984Z",
+      "verified": false,
+      "id": "wce1-qgCjXY"
+    },
+    {
+      "itemId": 101,
+      "claimantId": 1,
+      "claimedAt": "2026-09-05T02:21:35.570Z",
+      "verified": false,
+      "id": "85KH64fPOqA"
+    },
+    {
+      "itemId": 101,
+      "claimantId": 1,
+      "claimedAt": "2026-09-05T02:21:38.982Z",
+      "verified": false,
+      "id": "TJzvwWsh5Tc"
+    },
+    {
+      "itemId": 110,
+      "claimantId": 1,
+      "claimedAt": "2026-09-05T02:22:18.520Z",
+      "verified": false,
+      "id": "mXejuzW40dQ"
+    },
+    {
+      "itemId": 120,
+      "claimantId": 1,
+      "claimedAt": "2026-09-05T02:22:26.461Z",
+      "verified": false,
+      "id": "IGt3M2aZVpA"
+    },
+    {
+      "itemId": 111,
+      "claimantId": 1,
+      "claimedAt": "2026-09-05T02:22:38.310Z",
+      "verified": false,
+      "id": "gjJX5EoaRA4"
+    },
+    {
+      "itemId": 121,
+      "claimantId": 1,
+      "claimedAt": "2026-09-05T02:28:10.537Z",
+      "verified": false,
+      "id": "I1gU7O6-HXM"
+    },
+    {
+      "itemId": 1000,
+      "claimantId": 1,
+      "claimedAt": "2026-09-05T02:28:23.544Z",
+      "verified": false,
+      "id": "mLKlsHHcKYM"
+    },
+    {
+      "itemId": 10001,
+      "claimantId": 1,
+      "claimedAt": "2026-09-05T02:28:32.702Z",
+      "verified": false,
+      "id": "VdcSbIreEO8"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
