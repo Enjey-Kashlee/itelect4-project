@@ -1,65 +1,97 @@
+import { useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import type { ChangeEvent } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import ClaimBadge from "../components/ClaimBadge";
-import { createClaim, fetchClaims } from "../api/client";
+import { createClaim, fetchClaims, fetchItems } from "../api/client";
 import { student } from "../data/mockData";
+import type {
+  ClaimFormInput,
+  ClaimFormValues,
+} from "../schemas/claimSchema";
+import { createClaimSchema } from "../schemas/claimSchema";
 import type { ApiClaim, Claim, NewClaim } from "../types/index";
 
 function ClaimsPage() {
-  const [itemId, setItemId] = useState("");
   const queryClient = useQueryClient();
 
-  const { data, isPending, isError, error } = useQuery<ApiClaim[]>({
+  const {
+    data: claimsData,
+    isPending: claimsPending,
+    isError: claimsIsError,
+    error: claimsError,
+  } = useQuery<ApiClaim[]>({
     queryKey: ["claims"],
     queryFn: fetchClaims,
+  });
+
+  const {
+    data: items,
+    isPending: itemsPending,
+    isError: itemsIsError,
+    error: itemsError,
+  } = useQuery({
+    queryKey: ["items"],
+    queryFn: fetchItems,
+  });
+
+  const claimValidationSchema = useMemo(
+    () => createClaimSchema((items ?? []).map((item) => Number(item.id))),
+    [items],
+  );
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ClaimFormInput, unknown, ClaimFormValues>({
+    resolver: zodResolver(claimValidationSchema),
+    mode: "onBlur",
+    defaultValues: { itemId: "" },
   });
 
   const addClaim = useMutation<ApiClaim, Error, NewClaim>({
     mutationFn: createClaim,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["claims"] });
-      setItemId("");
+      reset();
     },
   });
 
-  const parsedItemId = Number(itemId);
-  const canSubmit = Number.isInteger(parsedItemId) && parsedItemId > 0;
-
-  const handleItemIdChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    setItemId(event.target.value);
-  };
-
-  const handleAdd = (): void => {
-    if (!canSubmit) {
-      return;
-    }
-
+  const handleAdd = (values: ClaimFormValues): void => {
     addClaim.mutate({
-      itemId: parsedItemId,
+      itemId: values.itemId,
       claimantId: student.id,
       claimedAt: new Date().toISOString(),
       verified: false,
     });
   };
 
-  if (isPending) {
+  if (claimsPending || itemsPending) {
     return (
       <div className="animate-pulse p-6 text-gray-500">
-        Loading claims...
+        Loading items and claims...
       </div>
     );
   }
 
-  if (isError) {
+  if (claimsIsError || itemsIsError) {
+    const loadError = claimsError ?? itemsError;
+
     return (
       <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        {error instanceof Error ? error.message : "Could not load claims."}
+        {loadError instanceof Error
+          ? loadError.message
+          : "Could not load items or claims."}
       </div>
     );
   }
 
-  const claims: Claim[] = (data ?? []).map((claim) => ({
+  const claims: Claim[] = (claimsData ?? []).map((claim) => ({
     ...claim,
     claimedAt: new Date(claim.claimedAt),
   }));
@@ -70,34 +102,43 @@ function ClaimsPage() {
         My Claims
       </h1>
 
-      <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end">
-        <div>
-          <label
+      <form
+        onSubmit={handleSubmit(handleAdd)}
+        className="mb-6 grid gap-4 rounded-lg border border-border p-4"
+      >
+        <div className="grid gap-1.5">
+          <Label
             htmlFor="claim-item-id"
-            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+            className="text-foreground"
           >
             Item ID
-          </label>
-          <input
+          </Label>
+          <Input
             id="claim-item-id"
             type="number"
             min="1"
             step="1"
-            value={itemId}
-            onChange={handleItemIdChange}
+            {...register("itemId")}
+            aria-describedby={
+              errors.itemId ? "claim-item-id-error" : undefined
+            }
+            aria-invalid={errors.itemId ? true : undefined}
             placeholder="101"
-            className="rounded border border-gray-300 bg-white p-2 text-gray-900 placeholder-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
           />
+          {errors.itemId?.message && (
+            <p id="claim-item-id-error" className="text-sm text-destructive">
+              {errors.itemId.message}
+            </p>
+          )}
         </div>
-        <button
-          type="button"
-          onClick={handleAdd}
-          disabled={!canSubmit || addClaim.isPending}
-          className="rounded bg-blue-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+        <Button
+          type="submit"
+          disabled={addClaim.isPending}
+          className="justify-self-start"
         >
           {addClaim.isPending ? "Saving..." : "Add claim"}
-        </button>
-      </div>
+        </Button>
+      </form>
 
       {addClaim.isError && (
         <p className="mb-4 text-sm text-red-700">
