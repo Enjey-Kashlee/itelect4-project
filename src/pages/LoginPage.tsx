@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import useAuthStore from "../store/authStore";
 
 function LoginPage() {
@@ -30,26 +33,25 @@ function LoginPage() {
           handleLogin();
         }}
       >
-        <label
+        <Label
           htmlFor="name"
-          className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="mb-2 text-foreground"
         >
           Your name
-        </label>
-        <input
+        </Label>
+        <Input
           id="name"
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="Your name"
-          className="w-full rounded border border-gray-300 bg-white p-2 text-gray-900 placeholder-gray-400 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
         />
-        <button
+        <Button
           type="submit"
           disabled={name.trim() === ""}
-          className="mt-3 rounded bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+          className="mt-3"
         >
           Log In
-        </button>
+        </Button>
       </form>
     </div>
   );
