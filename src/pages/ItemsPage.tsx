@@ -1,39 +1,32 @@
-import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import type { ChangeEvent } from "react";
 import { Link } from "react-router";
+import { fetchItems } from "../api/client";
 import ItemCard from "../components/ItemCard";
-import { mockItems } from "../data/mockData";
 import usePrevious from "../hooks/usePrevious";
+import useUiStore from "../store/uiStore";
 import type { Item } from "../types/index";
 
 function ItemsPage() {
-  const [items, setItems] = useState<Item[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isError, setIsError] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const { data, isPending, isError, error } = useQuery<Item[]>({
+    queryKey: ["items"],
+    queryFn: fetchItems,
+  });
+  const searchTerm = useUiStore((state) => state.searchTerm);
+  const setSearchTerm = useUiStore((state) => state.setSearchTerm);
   const previousSearch = usePrevious(searchTerm);
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setItems(mockItems);
-      setIsLoading(false);
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, []);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>): void =>
     setSearchTerm(e.target.value);
 
   const normalizedSearchTerm = searchTerm.toLowerCase();
-  const filteredItems = items.filter(
+  const filteredItems = (data ?? []).filter(
     (item) =>
       item.title.toLowerCase().includes(normalizedSearchTerm) ||
       String(item.id).toLowerCase().includes(normalizedSearchTerm),
   );
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="animate-pulse p-6 text-gray-500">Loading items...</div>
     );
@@ -42,7 +35,7 @@ function ItemsPage() {
   if (isError) {
     return (
       <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        Could not load items.
+        {error instanceof Error ? error.message : "Could not load items."}
       </div>
     );
   }
@@ -52,15 +45,7 @@ function ItemsPage() {
       <h1 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
         Items
       </h1>
-      <button
-        type="button"
-        onClick={() => setIsError(true)}
-        className="rounded bg-red-100 px-2 py-1 text-xs text-red-700"
-      >
-        Simulate Error
-      </button>
       <input
-        ref={searchInputRef}
         value={searchTerm}
         onChange={handleSearchChange}
         placeholder="Search items..."
@@ -81,7 +66,7 @@ function ItemsPage() {
             to={`/items/${item.id}`}
             className="block transition hover:-translate-y-0.5"
           >
-            <ItemCard item={item}/>
+            <ItemCard item={item} />
           </Link>
         ))}
       </div>

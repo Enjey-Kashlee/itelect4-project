@@ -18,12 +18,21 @@ export interface Item {
 }
 // A Claim is filed when a user claims an item; a security admin verifies it.
 export interface Claim {
-  id: number;
+  id: ID;
   itemId: number;
   claimantId: number | string;
   claimedAt: Date;
   verified?: boolean; // ? means this field is optional -- set once an admin verifies
 }
+
+// API claims use string IDs and ISO timestamp strings instead of Date objects.
+export type ApiClaim = Omit<Claim, "id" | "claimedAt"> & {
+  id: string;
+  claimedAt: string;
+};
+
+// New claims do not include an ID because the API assigns it.
+export type NewClaim = Omit<ApiClaim, "id">;
 
 // ===== TYPE ALIASES =====
 // A type alias gives a name to any type -- primitives, unions, functions, objects
