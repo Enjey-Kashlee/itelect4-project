@@ -5,7 +5,7 @@ import useUiStore from "../store/uiStore";
 function Layout() {
   const isDarkMode = useUiStore((state) => state.isDarkMode);
   const toggleDarkMode = useUiStore((state) => state.toggleDarkMode);
-  const userName = useAuthStore((state) => state.userName);
+  const userName = useAuthStore((state) => state.user?.name ?? null);
   const logout = useAuthStore((state) => state.logout);
 
   const base = "rounded px-3 py-1.5 text-sm";
@@ -34,9 +34,14 @@ function Layout() {
 
           <div className="ml-auto flex flex-wrap items-center gap-2">
             {userName === null ? (
-              <NavLink to="/login" className={linkClass}>
-                Login
-              </NavLink>
+              <>
+                <NavLink to="/login" className={linkClass}>
+                  Login
+                </NavLink>
+                <NavLink to="/register" className={linkClass}>
+                  Register
+                </NavLink>
+              </>
             ) : (
               <button
                 type="button"

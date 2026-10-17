@@ -1,47 +1,60 @@
-import type { ApiClaim, Item, NewClaim } from "../types/index";
+import useAuthStore from "../store/authStore.ts";
+import type {
+  ApiClaim,
+  Item,
+  LoginBody,
+  LoginResponse,
+  NewClaim,
+  RegisterBody,
+  User,
+} from "../types/index";
 
-export const API_URL = "http://localhost:3001";
+export const API_URL = (import.meta.env.VITE_API_URL ?? "")
+  .trim()
+  .replace(/\/+$/, "");
 
-export async function fetchItems(): Promise<Item[]> {
-  const res = await fetch(`${API_URL}/items`);
-
-  if (!res.ok) {
-    throw new Error("Could not load items");
+async function request<T>(
+  path: string,
+  options: RequestInit = {},
+  authenticated = false,
+): Promise<T> {
+  if (!API_URL)
+    throw new Error(
+      "Set VITE_API_URL to your backend origin and rebuild the frontend.",
+    );
+  const token = useAuthStore.getState().token;
+  if (authenticated && !token)
+    throw new Error("Please log in to view your claims.");
+  const headers = new Headers(options.headers);
+  if (options.body) headers.set("Content-Type", "application/json");
+  if (authenticated) headers.set("Authorization", `Bearer ${token}`);
+  const response = await fetch(`${API_URL}${path}`, { ...options, headers });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    if (
+      authenticated &&
+      response.status === 401 &&
+      useAuthStore.getState().token === token
+    ) {
+      useAuthStore.getState().logout();
+    }
+    const message =
+      body?.errors?.join?.("; ") ||
+      body?.message ||
+      `Request failed (${response.status}) at ${API_URL}${path}`;
+    throw new Error(message);
   }
-
-  return res.json();
+  return body as T;
 }
 
-export async function fetchItemById(id: string): Promise<Item> {
-  const res = await fetch(`${API_URL}/items/${encodeURIComponent(id)}`);
-
-  if (!res.ok) {
-    throw new Error("Could not load that item");
-  }
-
-  return res.json();
-}
-
-export async function fetchClaims(): Promise<ApiClaim[]> {
-  const res = await fetch(`${API_URL}/claims`);
-
-  if (!res.ok) {
-    throw new Error("Could not load claims");
-  }
-
-  return res.json();
-}
-
-export async function createClaim(newClaim: NewClaim): Promise<ApiClaim> {
-  const res = await fetch(`${API_URL}/claims`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newClaim),
-  });
-
-  if (!res.ok) {
-    throw new Error("Could not save the claim");
-  }
-
-  return res.json();
-}
+export const fetchItems = (): Promise<Item[]> => request("/api/items");
+export const fetchItemById = (id: string): Promise<Item> =>
+  request(`/api/items/${encodeURIComponent(id)}`);
+export const fetchClaims = (): Promise<ApiClaim[]> =>
+  request("/api/claims", {}, true);
+export const createClaim = (claim: NewClaim): Promise<ApiClaim> =>
+  request("/api/claims", { method: "POST", body: JSON.stringify(claim) }, true);
+export const login = (body: LoginBody): Promise<LoginResponse> =>
+  request("/api/auth/login", { method: "POST", body: JSON.stringify(body) });
+export const register = (body: RegisterBody): Promise<User> =>
+  request("/api/auth/register", { method: "POST", body: JSON.stringify(body) });

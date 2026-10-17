@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "./index.css";
 import App from "./App.tsx";
+import useAuthStore from "./store/authStore";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -12,6 +13,14 @@ const queryClient = new QueryClient({
       retry: 1,
     },
   },
+});
+
+// Cancel in-flight requests and discard private data whenever the session changes.
+useAuthStore.subscribe((state, previous) => {
+  if (state.token !== previous.token) {
+    void queryClient.cancelQueries();
+    queryClient.clear();
+  }
 });
 
 createRoot(document.getElementById("root")!).render(

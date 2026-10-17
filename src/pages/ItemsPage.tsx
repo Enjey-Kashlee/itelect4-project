@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { ChangeEvent } from "react";
 import { Link } from "react-router";
-import { fetchItems } from "../api/client";
+import { API_URL, fetchItems } from "../api/client";
 import ItemCard from "../components/ItemCard";
 import usePrevious from "../hooks/usePrevious";
 import useUiStore from "../store/uiStore";
@@ -35,7 +35,8 @@ function ItemsPage() {
   if (isError) {
     return (
       <div className="rounded-lg bg-red-50 p-4 text-red-700">
-        {error instanceof Error ? error.message : "Could not load items."}
+        {error instanceof Error ? error.message : "Could not load items."} —
+        tried {API_URL || "(VITE_API_URL not set)"}/api/items
       </div>
     );
   }
@@ -48,6 +49,7 @@ function ItemsPage() {
       <input
         value={searchTerm}
         onChange={handleSearchChange}
+        aria-label="Search items"
         placeholder="Search items..."
         className="mt-4 w-full rounded border border-gray-300 bg-white p-2
         text-gray-900 placeholder-gray-400 dark:border-gray-600

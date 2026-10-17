@@ -15,7 +15,11 @@ function App() {
         <Route index element={<DashboardPage />} />
         <Route path="items" element={<ItemsPage />} />
         <Route path="items/:id" element={<ItemDetailPage />} />
-        <Route path="login" element={<LoginPage />} />
+        <Route path="login" element={<LoginPage key="login" />} />
+        <Route
+          path="register"
+          element={<LoginPage key="register" registering />}
+        />
         <Route element={<ProtectedRoute />}>
           <Route path="claims" element={<ClaimsPage />} />
         </Route>

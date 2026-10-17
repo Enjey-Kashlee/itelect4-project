@@ -1,33 +1,31 @@
-import { useState } from "react";
-import type { User } from "../types/index";
-import UserCard from "../components/UserCard";
-import useToggle from "../hooks/useToggle";
-import { student } from "../data/mockData";
+import { Link } from "react-router";
+import useAuthStore from "../store/authStore";
 
 function DashboardPage() {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [showDetails, toggleDetails] = useToggle(false);
-
+  const user = useAuthStore((state) => state.user);
   return (
-    <>
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <UserCard user={student} onSelect={setSelectedUser} />
-        {selectedUser && (
-          <p className="flex items-center text-gray-700 dark:text-gray-200">
-            Selected: {selectedUser.name}
-          </p>
-        )}
-        <button
-          onClick={toggleDetails}
-          className="self-start rounded bg-gray-200 px-3 py-1.5 text-sm
-          font-semibold text-gray-900 transition hover:bg-gray-300
-          dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+    <div className="max-w-2xl space-y-4 text-gray-900 dark:text-white">
+      <h1 className="text-2xl font-bold">Campus Lost &amp; Found</h1>
+      <p>
+        {user
+          ? `Welcome, ${user.name}.`
+          : "Browse campus item reports and submit a claim for an item that belongs to you."}
+      </p>
+      <div className="flex flex-wrap gap-4">
+        <Link
+          to="/items"
+          className="text-blue-700 underline dark:text-blue-300"
         >
-          {showDetails ? "Hide" : "Show"} Details
-        </button>
+          Browse items
+        </Link>
+        <Link
+          to={user ? "/claims" : "/register"}
+          className="text-blue-700 underline dark:text-blue-300"
+        >
+          {user ? "My claims" : "Create an account"}
+        </Link>
       </div>
-    </>
+    </div>
   );
 }
-
 export default DashboardPage;

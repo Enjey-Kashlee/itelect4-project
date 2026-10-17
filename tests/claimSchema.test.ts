@@ -1,76 +1,45 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+const { claimSchema, createClaimSchema } =
+  await import("../src/schemas/claimSchema.ts");
+const itemId = "65f000000000000000000001";
+const proofDescription = "My initials are underneath.";
 
-const { claimSchema, createClaimSchema } = await import(
-  "../src/schemas/claimSchema.ts",
-);
-
-test("parses a valid item ID form value into a number", () => {
-  const result = claimSchema.safeParse({ itemId: "101" });
-
-  assert.equal(result.success, true);
-  if (!result.success) {
-    return;
-  }
-
-  assert.deepEqual(result.data, { itemId: 101 });
-});
-
-test("rejects a missing item ID", () => {
-  const result = claimSchema.safeParse({ itemId: "" });
-
-  assert.equal(result.success, false);
-  if (result.success) {
-    return;
-  }
-
-  assert.equal(result.error.issues[0]?.message, "Enter a valid item ID.");
-});
-
-test("rejects a non-whole item ID", () => {
-  const result = claimSchema.safeParse({ itemId: "101.5" });
-
-  assert.equal(result.success, false);
-  if (result.success) {
-    return;
-  }
-
-  assert.equal(
-    result.error.issues[0]?.message,
-    "Item ID must be a whole number.",
+test("claims preserve string IDs and trim proof", () => {
+  assert.deepEqual(
+    claimSchema.parse({ itemId, proofDescription: `  ${proofDescription}  ` }),
+    { itemId, proofDescription },
   );
 });
-
-test("rejects a non-positive item ID", () => {
-  const result = claimSchema.safeParse({ itemId: "0" });
-
-  assert.equal(result.success, false);
-  if (result.success) {
-    return;
+test("claims reject missing or malformed ObjectIds", () => {
+  for (const id of ["", "101", "101.5", "z".repeat(24)]) {
+    assert.equal(
+      claimSchema.safeParse({ itemId: id, proofDescription }).success,
+      false,
+    );
   }
-
-  assert.equal(result.error.issues[0]?.message, "Enter a valid item ID.");
 });
-
-test("accepts an item ID that exists in the available items", () => {
-  const schema = createClaimSchema([101, 102]);
-  const result = schema.safeParse({ itemId: "101" });
-
-  assert.equal(result.success, true);
-});
-
-test("rejects an item ID that does not exist in the available items", () => {
-  const schema = createClaimSchema([101, 102]);
-  const result = schema.safeParse({ itemId: "999" });
-
-  assert.equal(result.success, false);
-  if (result.success) {
-    return;
+test("proof requires 10 to 1000 characters after trimming", () => {
+  for (const proof of ["", "short", " ".repeat(20), "x".repeat(1001)]) {
+    assert.equal(
+      claimSchema.safeParse({ itemId, proofDescription: proof }).success,
+      false,
+    );
   }
-
-  assert.equal(result.error.issues[0]?.path[0], "itemId");
+  for (const length of [10, 1000]) {
+    assert.equal(
+      claimSchema.safeParse({ itemId, proofDescription: "x".repeat(length) })
+        .success,
+      true,
+    );
+  }
+});
+test("claims require an item returned by the API", () => {
+  const schema = createClaimSchema([itemId]);
+  assert.equal(schema.safeParse({ itemId, proofDescription }).success, true);
   assert.equal(
-    result.error.issues[0]?.message,
-    "That item does not exist.",
+    schema.safeParse({ itemId: "65f000000000000000000002", proofDescription })
+      .success,
+    false,
   );
 });
