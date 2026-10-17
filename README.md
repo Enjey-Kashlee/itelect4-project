@@ -1,6 +1,12 @@
 # Campus Lost & Found
 
-GT4 Part 2 connects the React/TypeScript frontend to the Express/MongoDB backend. Visitors browse public items. Students register, log in, and submit their own claims with proof of ownership. The server assigns ownership, dates, and pending status; administrator review is outside this task.
+Campus Lost & Found connects a React/TypeScript frontend to an Express/MongoDB backend. Visitors browse public items. Students register, log in, and submit their own claims with proof of ownership. The server assigns ownership, dates, and pending status; administrator review is outside this task.
+
+## Live application
+
+- Frontend: [https://itelect4-project-mu.vercel.app](https://itelect4-project-mu.vercel.app)
+- Backend API: [https://itelect4-backend-virid.vercel.app](https://itelect4-backend-virid.vercel.app)
+- API checks: [Health](https://itelect4-backend-virid.vercel.app/api/health) · [Items](https://itelect4-backend-virid.vercel.app/api/items)
 
 ## Run locally
 
@@ -19,7 +25,7 @@ Use Node.js 24 and `npm ci`. Copy `.env.example` to `.env.local` and set `VITE_A
 
 The API client sends `Authorization: Bearer <token>` on private requests. A 401 clears the session. Session changes cancel requests and clear cached data; claim query keys also include the user ID. Passwords are never persisted. JWTs remain in browser storage for the course's persistent-session flow, so protecting against injected scripts remains important. Server authorization is the security boundary.
 
-Item and user IDs are strings, API timestamps are ISO strings, and claims use `pending`, `approved`, or `rejected` status. The client supplies only `itemId` and `proofDescription` when creating a claim. JSON Server, `db.json`, and the default mock student have been removed.
+Item and user IDs are strings, API timestamps are ISO strings, and claims use `pending`, `approved`, or `rejected` status. The client supplies only `itemId` and `proofDescription` when creating a claim.
 
 ## Checks
 
@@ -30,7 +36,7 @@ npm run build
 npx tsc --noEmit
 ```
 
-The existing lint failure at `src/hooks/usePrevious.ts` (`react-hooks/refs`) predates this integration and remains a separate issue. Unit tests cover API routes, authorization headers, error handling, persisted auth, claim validation, route decisions, and UI settings. See [DEPLOYMENT.md](DEPLOYMENT.md) for both deployments, live checks, and submission steps.
+The existing lint failure at `src/hooks/usePrevious.ts` (`react-hooks/refs`) predates this integration and remains a separate issue. Unit tests cover API routes, authorization headers, error handling, persisted auth, claim validation, route decisions, and UI settings.
 
 ## Stack
 

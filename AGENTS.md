@@ -22,7 +22,7 @@ Run `npm test`, `npm run lint`, `npm run build`, and `npx tsc --noEmit`. Tests u
 
 The existing lint error at `src/hooks/usePrevious.ts` (`react-hooks/refs`) predates GT4 integration. Keep it visible and fix it separately when requested; do not suppress the rule.
 
-Browser checks should cover public items/detail, protected claims redirect, register/login, invalid proof, creating a claim, refresh persistence, logout, account isolation, direct route refreshes, and the catch-all. Use temporary local MongoDB for automated tests, never Atlas. See DEPLOYMENT.md for live verification.
+Browser checks should cover public items/detail, protected claims redirect, register/login, invalid proof, creating a claim, refresh persistence, logout, account isolation, direct route refreshes, and the catch-all. Use temporary local MongoDB for automated tests, never Atlas.
 
 ## UI and code conventions
 
