@@ -31,6 +31,9 @@ function Layout() {
           <NavLink to="/claims" className={linkClass}>
             Claims
           </NavLink>
+          <NavLink to="/review" className={linkClass}>
+            AI Claim Review
+          </NavLink>
 
           <div className="ml-auto flex flex-wrap items-center gap-2">
             {userName === null ? (
