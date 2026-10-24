@@ -19,14 +19,28 @@ const { default: useAuthStore } = await import("../src/store/authStore.ts");
 test("persists the authentication identity without serializing actions", () => {
   savedValues.clear();
   useAuthStore.getState().logout();
-  useAuthStore.getState().login("Juan");
+  useAuthStore
+    .getState()
+    .setSession("signed-token", {
+      id: "user-1",
+      name: "Juan",
+      email: "juan@example.com",
+      role: "student",
+      isActive: true,
+    });
 
-  const savedAuth = JSON.parse(savedValues.get("itelect4-auth") ?? "null");
+  const savedAuth = JSON.parse(savedValues.get("itelect4-auth-v2") ?? "null");
 
   assert.deepEqual(savedAuth.state, {
-    token: "demo-token-Juan",
-    userName: "Juan",
+    token: "signed-token",
+    user: {
+      id: "user-1",
+      name: "Juan",
+      email: "juan@example.com",
+      role: "student",
+      isActive: true,
+    },
   });
-  assert.equal(savedAuth.state.login, undefined);
+  assert.equal(savedAuth.state.setSession, undefined);
   assert.equal(savedAuth.state.logout, undefined);
 });

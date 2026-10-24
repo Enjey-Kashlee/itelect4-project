@@ -1,7 +1,7 @@
 // ===== INTERFACES =====
 // An interface defines the SHAPE of an object -- what fields it must have.
 export interface User {
-  id: number | string;
+  id: ID;
   name: string;
   email: string;
   role: "student" | "security_admin"; // only these values
@@ -9,20 +9,21 @@ export interface User {
 }
 // An Item is a lost/found post reported by a user.
 export interface Item {
-  id: ID; // number for lost/found reports, string for reused codes (e.g. a course code standing in as an item id)
+  id: ID;
   title: string;
   description: string;
   status: "lost" | "found";
   location: string;
-  reportedById: number | string;
+  reportedById: ID;
 }
 // A Claim is filed when a user claims an item; a security admin verifies it.
 export interface Claim {
   id: ID;
-  itemId: number;
-  claimantId: number | string;
+  itemId: ID;
+  claimantId: ID;
   claimedAt: Date;
-  verified?: boolean; // ? means this field is optional -- set once an admin verifies
+  proofDescription: string;
+  status: "pending" | "approved" | "rejected";
 }
 
 // API claims use string IDs and ISO timestamp strings instead of Date objects.
@@ -31,13 +32,24 @@ export type ApiClaim = Omit<Claim, "id" | "claimedAt"> & {
   claimedAt: string;
 };
 
-// New claims do not include an ID because the API assigns it.
-export type NewClaim = Omit<ApiClaim, "id">;
+// The server supplies the claim ID, owner, date, and initial status.
+export type NewClaim = Pick<ApiClaim, "itemId" | "proofDescription">;
+export interface LoginBody {
+  email: string;
+  password: string;
+}
+export interface RegisterBody extends LoginBody {
+  name: string;
+}
+export interface LoginResponse {
+  token: string;
+  user: User;
+}
 
 // ===== TYPE ALIASES =====
 // A type alias gives a name to any type -- primitives, unions, functions, objects
-// Alias for a union type (string OR number)
-export type ID = number | string;
+// MongoDB ObjectIds are serialized as strings by the API.
+export type ID = string;
 // Alias for an object shape -- e.g. a pin on the campus map where an item was found
 export type Coordinate = {
   x: number;
@@ -70,18 +82,18 @@ export type UserWithItem = User & {
   reportCount: number;
 };
 const topReporter: UserWithItem = {
-  id: 1,
+  id: "65f000000000000000000010",
   name: "Maria Santos",
   email: "m@example.com",
   role: "student",
   isActive: true,
   reportedItem: {
-    id: 101,
+    id: "65f000000000000000000001",
     title: "Blue Water Bottle",
     description: "Hydro Flask with a DLSL sticker",
     status: "lost",
     location: "Library, 2nd floor",
-    reportedById: 1,
+    reportedById: "65f000000000000000000010",
   },
   reportCount: 5,
 };
