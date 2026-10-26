@@ -29,8 +29,15 @@ Object.defineProperty(globalThis, "window", {
     },
   },
 });
-const { fetchItems, fetchItemById, fetchClaims, createClaim, login, register } =
-  await import("../src/api/client.ts");
+const {
+  fetchItems,
+  fetchItemById,
+  fetchClaims,
+  createClaim,
+  login,
+  register,
+  askAi,
+} = await import("../src/api/client.ts");
 const { default: useAuthStore } = await import("../src/store/authStore.ts");
 const requests: Array<{ url: string; init?: RequestInit }> = [];
 let response = new Response("[]");
@@ -99,6 +106,45 @@ test("registration and login use the real public auth routes", async () => {
     new Headers(requests.at(-1)?.init?.headers).has("Authorization"),
     false,
   );
+});
+
+test("AI reviews use the private API and pass quota errors to the form", async () => {
+  useAuthStore.getState().setSession("signed-token", user);
+  const review = {
+    summary: "A blue bottle.",
+    strengths: ["Initials."],
+    improvements: ["Bring your photo."],
+    readiness: "ready",
+  };
+  response = new Response(JSON.stringify(review));
+  assert.deepEqual(
+    await askAi("My blue bottle has initials underneath."),
+    review,
+  );
+  const sent = requests.at(-1)!;
+  assert.equal(sent.url, "https://api.example.test/api/ai");
+  assert.equal(sent.init?.method, "POST");
+  assert.equal(
+    new Headers(sent.init?.headers).get("Authorization"),
+    "Bearer signed-token",
+  );
+  assert.deepEqual(JSON.parse(String(sent.init?.body)), {
+    prompt: "My blue bottle has initials underneath.",
+  });
+  response = new Response(JSON.stringify({ message: "Quota used up" }), {
+    status: 429,
+  });
+  await assert.rejects(
+    askAi("My blue bottle has initials underneath."),
+    /Quota used up/,
+  );
+  useAuthStore.getState().logout();
+  const count = requests.length;
+  await assert.rejects(
+    askAi("My blue bottle has initials underneath."),
+    /log in/i,
+  );
+  assert.equal(requests.length, count);
 });
 
 test("API validation messages reach the caller", async () => {

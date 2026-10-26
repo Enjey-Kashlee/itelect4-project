@@ -129,3 +129,9 @@ export const enum Role {
   Student = "student",
   SecurityAdmin = "security_admin",
 }
+export interface AiReview {
+  summary: string;
+  strengths: string[];
+  improvements: string[];
+  readiness: "ready" | "almost" | "not-yet";
+}

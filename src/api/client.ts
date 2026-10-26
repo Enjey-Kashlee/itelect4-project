@@ -1,5 +1,6 @@
 import useAuthStore from "../store/authStore.ts";
 import type {
+  AiReview,
   ApiClaim,
   Item,
   LoginBody,
@@ -23,8 +24,7 @@ async function request<T>(
       "Set VITE_API_URL to your backend origin and rebuild the frontend.",
     );
   const token = useAuthStore.getState().token;
-  if (authenticated && !token)
-    throw new Error("Please log in to view your claims.");
+  if (authenticated && !token) throw new Error("Please log in to continue.");
   const headers = new Headers(options.headers);
   if (options.body) headers.set("Content-Type", "application/json");
   if (authenticated) headers.set("Authorization", `Bearer ${token}`);
@@ -58,3 +58,10 @@ export const login = (body: LoginBody): Promise<LoginResponse> =>
   request("/api/auth/login", { method: "POST", body: JSON.stringify(body) });
 export const register = (body: RegisterBody): Promise<User> =>
   request("/api/auth/register", { method: "POST", body: JSON.stringify(body) });
+
+export const askAi = (prompt: string): Promise<AiReview> =>
+  request(
+    "/api/ai",
+    { method: "POST", body: JSON.stringify({ prompt }) },
+    true,
+  );
