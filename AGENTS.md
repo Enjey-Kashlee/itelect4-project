@@ -18,9 +18,9 @@ Item reads are public. Claim reads and writes require a Bearer token. The browse
 
 Use Node.js 24. Install with `npm ci`. Copy `.env.example` to ignored `.env.local` and set `VITE_API_URL` to the backend origin. Run the separate backend, then `npm run dev`. JSON Server and db.json are removed.
 
-Run `npm test`, `npm run lint`, `npm run build`, and `npx tsc --noEmit`. Tests use Node's test runner. API tests supply Vite environment input using a Node module load hook. No coverage threshold is configured.
+Run `npm test`, `npm run lint`, `npm run build`, and `npx tsc --noEmit`. `npm test` runs the existing Node suite in `tests/`, then Vitest tests beside source files. Vitest uses jsdom, cleanup, restored spies, and a dummy VITE_API_URL from vite.config.ts. Existing Node API tests supply Vite environment input using a module load hook. No coverage threshold is configured.
 
-The existing lint error at `src/hooks/usePrevious.ts` (`react-hooks/refs`) predates GT4 integration. Keep it visible and fix it separately when requested; do not suppress the rule.
+GT6 resolves the previous `usePrevious` lint error with guarded state updates; the hook remembers the last distinct value and has regression tests. Do not suppress lint rules.
 
 Browser checks should cover public items/detail, protected claims redirect, register/login, invalid proof, creating a claim, refresh persistence, logout, account isolation, direct route refreshes, and the catch-all. Use temporary local MongoDB for automated tests, never Atlas.
 
