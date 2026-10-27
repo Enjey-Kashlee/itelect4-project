@@ -1,5 +1,7 @@
 # Campus Lost & Found
 
+[![CI](https://github.com/Enjey-Kashlee/itelect4-project/actions/workflows/ci.yml/badge.svg)](https://github.com/Enjey-Kashlee/itelect4-project/actions/workflows/ci.yml)
+
 Campus Lost & Found connects a React/TypeScript frontend to an Express/MongoDB backend. Visitors browse public items. Students register, log in, and submit their own claims with proof of ownership. The server assigns ownership, dates, and pending status; administrator review is outside this task.
 
 ## Live application
@@ -39,7 +41,22 @@ npm run build
 npx tsc --noEmit
 ```
 
-The existing lint failure at `src/hooks/usePrevious.ts` (`react-hooks/refs`) predates this integration and remains a separate issue. Unit tests cover API routes, authorization headers, error handling, persisted auth, claim validation, route decisions, and UI settings.
+`npm test` runs the existing Node unit suite (`npm run test:unit`), then Vitest (`npm run test:gt6`). Existing checks cover API requests, authorization headers, error handling, persisted auth, claim validation, route decisions, and UI settings. Vitest adds the three GT6 areas: `ClaimBadge` status text, `useToggle` state transitions, and invalid `ReviewPage` input displaying its exact schema message without calling `fetch`. A fourth file covers the `usePrevious` lint fix: it keeps the last distinct search value without reading refs during render.
+
+Vitest uses jsdom, cleans up after each test, restores spies, and supplies a dummy `VITE_API_URL`. Tests need no local environment file or running API. `npm run test:watch` watches the Vitest suite. GitHub Actions runs lint, both suites, and the TypeScript/Vite build on every push and pull request; no repository secrets are required here.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  browser["React + Vite on Vercel"] -->|"HTTP + Bearer token for private routes"| api["Express API on Vercel"]
+  api -->|Mongoose| db[(MongoDB Atlas)]
+  api -->|Server-only API key| gemini[Gemini API]
+```
+
+## AI-use disclosure
+
+OpenAI Codex assisted with implementation, test design, CI configuration, documentation, and debugging. The author is responsible for reviewing, understanding, and explaining the submitted code.
 
 ## Stack
 
