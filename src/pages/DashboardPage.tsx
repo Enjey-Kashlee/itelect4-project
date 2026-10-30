@@ -1,4 +1,3 @@
-import { Link } from "react-router";
 import useAuthStore from "../store/authStore";
 
 function DashboardPage() {
@@ -11,20 +10,6 @@ function DashboardPage() {
           ? `Welcome, ${user.name}.`
           : "Browse campus item reports and submit a claim for an item that belongs to you."}
       </p>
-      <div className="flex flex-wrap gap-4">
-        <Link
-          to="/items"
-          className="text-blue-700 underline dark:text-blue-300"
-        >
-          Browse items
-        </Link>
-        <Link
-          to={user ? "/claims" : "/register"}
-          className="text-blue-700 underline dark:text-blue-300"
-        >
-          {user ? "My claims" : "Create an account"}
-        </Link>
-      </div>
     </div>
   );
 }

@@ -8,6 +8,9 @@ import ItemsPage from "./pages/ItemsPage";
 import LoginPage from "./pages/LoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ReviewPage from "./pages/ReviewPage";
+import AdminRoute from "./components/AdminRoute";
+import AdminClaimsPage from "./pages/AdminClaimsPage";
+import AddItemPage from "./pages/AddItemPage";
 
 function App() {
   return (
@@ -24,6 +27,10 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="claims" element={<ClaimsPage />} />
           <Route path="review" element={<ReviewPage />} />
+        </Route>
+        <Route element={<AdminRoute />}>
+          <Route path="admin/claims" element={<AdminClaimsPage />} />
+          <Route path="admin/items/new" element={<AddItemPage />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Route>

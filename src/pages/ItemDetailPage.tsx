@@ -1,12 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { fetchItemById } from "../api/client";
 import ItemCard from "../components/ItemCard";
+import ItemClaimForm from "../components/ItemClaimForm";
+import useAuthStore from "../store/authStore";
 import type { Item } from "../types/index";
 
 function ItemDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isAdmin = useAuthStore(
+    (state) => state.user?.role === "security_admin",
+  );
+  const token = useAuthStore((state) => state.token);
+  const userId = useAuthStore((state) => state.user?.id);
   const { data, isPending, isError, error } = useQuery<Item>({
     queryKey: ["items", id],
     queryFn: () => {
@@ -68,13 +76,41 @@ function ItemDetailPage() {
   }
 
   return (
-    <div>
+    <div className="max-w-2xl space-y-6">
       <h1 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
-        {data.title}
+        Item details
       </h1>
-      <div className="max-w-sm">
-        <ItemCard item={data} />
-      </div>
+      <ItemCard item={data} />
+      {location.state?.itemCreated && (
+        <p role="status" className="text-gray-700 dark:text-gray-300">
+          Item created. Students can now view it in the tracker.
+        </p>
+      )}
+      {data.status === "found" ? (
+        <p className="border-t border-border pt-6 text-gray-600 dark:text-gray-300">
+          Found items can no longer be claimed.
+        </p>
+      ) : isAdmin ? (
+        <p className="text-gray-600 dark:text-gray-300">
+          Students can submit ownership claims for this item. Review them in{" "}
+          <Link to="/admin/claims" className="underline">
+            Manage Claims
+          </Link>
+          .
+        </p>
+      ) : token ? (
+        <ItemClaimForm key={`${userId}:${data.id}`} item={data} />
+      ) : (
+        <p className="text-gray-600 dark:text-gray-300">
+          <Link
+            to="/login"
+            state={{ from: `/items/${data.id}` }}
+            className="font-medium text-blue-700 underline underline-offset-4 dark:text-blue-300"
+          >
+            Log in to claim this item
+          </Link>
+        </p>
+      )}
       <button
         type="button"
         onClick={() => navigate("/items")}

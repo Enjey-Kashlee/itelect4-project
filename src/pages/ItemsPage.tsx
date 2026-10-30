@@ -5,9 +5,13 @@ import { API_URL, fetchItems } from "../api/client";
 import ItemCard from "../components/ItemCard";
 import usePrevious from "../hooks/usePrevious";
 import useUiStore from "../store/uiStore";
+import useAuthStore from "../store/authStore";
 import type { Item } from "../types/index";
 
 function ItemsPage() {
+  const isAdmin = useAuthStore(
+    (state) => state.user?.role === "security_admin",
+  );
   const { data, isPending, isError, error } = useQuery<Item[]>({
     queryKey: ["items"],
     queryFn: fetchItems,
@@ -46,6 +50,14 @@ function ItemsPage() {
       <h1 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
         Items
       </h1>
+      {isAdmin && (
+        <Link
+          to="/admin/items/new"
+          className="mb-4 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+        >
+          Add item
+        </Link>
+      )}
       <input
         value={searchTerm}
         onChange={handleSearchChange}
@@ -66,7 +78,7 @@ function ItemsPage() {
           <Link
             key={item.id}
             to={`/items/${item.id}`}
-            className="block transition hover:-translate-y-0.5"
+            className="block rounded-xl outline-none transition-colors hover:ring-1 hover:ring-blue-500 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 dark:focus-visible:ring-blue-400 dark:focus-visible:ring-offset-gray-900"
           >
             <ItemCard item={item} />
           </Link>
