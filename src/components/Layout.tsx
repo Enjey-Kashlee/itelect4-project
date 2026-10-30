@@ -6,6 +6,9 @@ function Layout() {
   const isDarkMode = useUiStore((state) => state.isDarkMode);
   const toggleDarkMode = useUiStore((state) => state.toggleDarkMode);
   const userName = useAuthStore((state) => state.user?.name ?? null);
+  const isAdmin = useAuthStore(
+    (state) => state.user?.role === "security_admin",
+  );
   const logout = useAuthStore((state) => state.logout);
 
   const base = "rounded px-3 py-1.5 text-sm";
@@ -28,12 +31,20 @@ function Layout() {
           <NavLink to="/items" className={linkClass}>
             Items
           </NavLink>
-          <NavLink to="/claims" className={linkClass}>
-            Claims
-          </NavLink>
-          <NavLink to="/review" className={linkClass}>
-            AI Claim Review
-          </NavLink>
+          {isAdmin ? (
+            <NavLink to="/admin/claims" className={linkClass}>
+              Manage Claims
+            </NavLink>
+          ) : (
+            <>
+              <NavLink to="/claims" className={linkClass}>
+                Claims
+              </NavLink>
+              <NavLink to="/review" className={linkClass}>
+                AI Claim Review
+              </NavLink>
+            </>
+          )}
 
           <div className="ml-auto flex flex-wrap items-center gap-2">
             {userName === null ? (

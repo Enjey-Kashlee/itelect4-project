@@ -15,6 +15,7 @@ export interface Item {
   status: "lost" | "found";
   location: string;
   reportedById: ID;
+  reportedBy?: Pick<User, "id" | "name"> | null;
 }
 // A Claim is filed when a user claims an item; a security admin verifies it.
 export interface Claim {
@@ -24,13 +25,27 @@ export interface Claim {
   claimedAt: Date;
   proofDescription: string;
   status: "pending" | "approved" | "rejected";
+  item?:
+    | (Pick<Item, "id" | "title" | "location"> & Partial<Pick<Item, "status">>)
+    | null;
+  reviewedById?: ID;
+  reviewedAt?: Date;
 }
 
 // API claims use string IDs and ISO timestamp strings instead of Date objects.
-export type ApiClaim = Omit<Claim, "id" | "claimedAt"> & {
+export type ApiClaim = Omit<Claim, "id" | "claimedAt" | "reviewedAt"> & {
   id: string;
   claimedAt: string;
+  reviewedAt?: string;
 };
+export type AdminClaim = ApiClaim & {
+  claimant: Pick<User, "id" | "name"> | null;
+};
+export type StudentReporter = Pick<User, "id" | "name" | "email">;
+export type NewItem = Pick<
+  Item,
+  "title" | "description" | "location" | "reportedById"
+>;
 
 // The server supplies the claim ID, owner, date, and initial status.
 export type NewClaim = Pick<ApiClaim, "itemId" | "proofDescription">;

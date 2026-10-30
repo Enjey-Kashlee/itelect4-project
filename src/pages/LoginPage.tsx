@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,12 @@ import type { RegisterBody } from "../types/index";
 
 function LoginPage({ registering = false }: { registering?: boolean }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from: unknown = location.state?.from;
+  const returnTo =
+    typeof from === "string" && /^\/items\/[a-f\d]{24}$/i.test(from)
+      ? from
+      : "/claims";
   const {
     register,
     handleSubmit,
@@ -34,7 +40,9 @@ function LoginPage({ registering = false }: { registering?: boolean }) {
     },
     onSuccess: ({ token, user }) => {
       useAuthStore.getState().setSession(token, user);
-      navigate("/claims", { replace: true });
+      navigate(user.role === "security_admin" ? "/admin/claims" : returnTo, {
+        replace: true,
+      });
     },
   });
 
@@ -127,7 +135,11 @@ function LoginPage({ registering = false }: { registering?: boolean }) {
         </Button>
       </form>
       <p className="mt-4 text-sm text-gray-700 dark:text-gray-300">
-        <Link className="underline" to={registering ? "/login" : "/register"}>
+        <Link
+          className="underline"
+          to={registering ? "/login" : "/register"}
+          state={{ from: returnTo }}
+        >
           {registering
             ? "Already have an account? Log in"
             : "Create an account"}
